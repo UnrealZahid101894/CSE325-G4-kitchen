@@ -1,0 +1,7 @@
+/kitchen
+*.o
+*.out
+*.swp
+*~
+.vscode/
+.idea/
