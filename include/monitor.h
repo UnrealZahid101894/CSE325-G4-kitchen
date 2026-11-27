@@ -7,6 +7,7 @@ typedef struct {
     sem_t mutex;
     sem_t next;
     int next_count;
+    long ops;
 } monitor_t;
 
 typedef struct {
