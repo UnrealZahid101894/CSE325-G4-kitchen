@@ -133,7 +133,7 @@ static int shares(const kitchen_t *k, int a, int b)
     return 0;
 }
 
-static void mon_test(kitchen_t *k, int me, int i)
+static void mon_test(kitchen_t *k, int i)
 {
     int j;
 
@@ -144,38 +144,28 @@ static void mon_test(kitchen_t *k, int me, int i)
             return;
     k->mon_state[i] = CHEF_COOKING;
     cond_signal(&k->mon, &k->self[i]);
-    k->chef[me].sem_ops++;
 }
 
 static void mon_pickup(kitchen_t *k, int id)
 {
-    chef_t *c = &k->chef[id];
-
     mon_enter(&k->mon);
-    c->sem_ops++;
     k->mon_state[id] = CHEF_HUNGRY;
-    mon_test(k, id, id);
-    if (k->mon_state[id] != CHEF_COOKING) {
+    mon_test(k, id);
+    if (k->mon_state[id] != CHEF_COOKING)
         cond_wait(&k->mon, &k->self[id]);
-        c->sem_ops++;
-    }
     mon_leave(&k->mon);
-    c->sem_ops++;
 }
 
 static void mon_putdown(kitchen_t *k, int id)
 {
-    chef_t *c = &k->chef[id];
     int j;
 
     mon_enter(&k->mon);
-    c->sem_ops++;
     k->mon_state[id] = CHEF_THINKING;
     for (j = 0; j < k->cfg.chefs; j++)
         if (j != id && shares(k, id, j))
-            mon_test(k, id, j);
+            mon_test(k, j);
     mon_leave(&k->mon);
-    c->sem_ops++;
 }
 
 static void acquire(kitchen_t *k, int id, const int *order)
