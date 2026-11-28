@@ -43,6 +43,9 @@ static void summarize(const kitchen_t *k, const run_result_t *r, summary_t *s)
             s->max_dishes = c->dishes;
     }
 
+    if (k->cfg.mode == MODE_MONITOR)
+        s->sem_ops = k->mon.ops;
+
     s->fairness = (s->max_dishes > 0) ? (double)s->min_dishes / (double)s->max_dishes : 0.0;
     s->throughput = (r->elapsed_s > 0) ? (double)r->total_dishes / r->elapsed_s : 0.0;
     s->avg_wait_ms = (s->sum_dishes > 0)
